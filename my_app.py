@@ -56,10 +56,8 @@ def plot_numeric_distribution(data, selected_features, color_type, line_type, li
         st.warning("Please select numeric features for visualization.")
         return
 
-    numeric_features = data.select_dtypes(include=['float64', 'int64'])
-
-    # Create subplots
-    fig, axes = plt.subplots(1, len(selected_features), figsize=(15, 5))
+    # Create a figure with subplots
+    fig = make_subplots(rows=1, cols=len(selected_features), subplot_titles=selected_features, shared_yaxes=True)
 
     # Set line style
     line_styles = ['solid', 'dotted', 'dashed']
@@ -69,26 +67,42 @@ def plot_numeric_distribution(data, selected_features, color_type, line_type, li
 
     # Set line width
     try:
-        line_width = int(line_width)
+        line_width = float(line_width)
     except ValueError:
-        line_width = 1
+        line_width = 1.0
 
     # Set color
-    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+    colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black']
     color = colors[0]  # Default to blue
     if color_type in colors:
         color = color_type
 
     # Plot histograms for each selected numeric feature
     for i, col in enumerate(selected_features):
-        ax = axes[i]
-        sns.histplot(data[col], kde=True, ax=ax, color=color, linestyle=line_style, linewidth=line_width)
-        ax.set_title(f'Distribution of {col}')
-        ax.set_xlabel(col)
-        ax.set_ylabel('Frequency')
+        histogram = go.Histogram(x=data[col], marker_color=color)
+        histogram.update_xaxes(title_text=col)
+        histogram.update_yaxes(title_text='Frequency')
 
-    plt.tight_layout()
-    st.pyplot(fig)
+        fig.add_trace(histogram, row=1, col=i+1)
+
+    # Update the layout
+    fig.update_layout(
+        title="Numeric Feature Distribution",
+        xaxis=dict(type='category'),  # Use category type for x-axis labels
+        xaxis_showgrid=False,
+        yaxis_showgrid=False,
+        barmode='overlay',
+        bargap=0.1,
+        bargroupgap=0.1,
+        showlegend=False
+    )
+
+    # Update line style and line width
+    for i in range(len(selected_features)):
+        fig.update_traces(marker=dict(line=dict(width=line_width, dash=line_style))
+
+    # Show the Plotly figure in Streamlit
+    st.plotly_chart(fig)
 
 # Streamlit app
 def main():
