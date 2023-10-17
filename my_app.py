@@ -8,12 +8,7 @@ from scipy.io import arff
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
 
-# Function to load data
 @st.cache
-def load_data():
-    data = arff.loadarff('jm1.arff')
-    df = pd.DataFrame(data[0])
-    return df
 
 # Function to calculate feature importance
 def feature_importance(data, target_col):
@@ -92,9 +87,11 @@ def plot_numeric_distribution(data, selected_features, color_type, line_type, li
 
 # Streamlit app
 def main():
+
+    # Function to load data
     st.title("Data Visualization App")
     data = load_data()
-
+    
     st.sidebar.header("Data Filters")
     selected_features = st.sidebar.multiselect("Select Features for Visualization", data.columns)
 
