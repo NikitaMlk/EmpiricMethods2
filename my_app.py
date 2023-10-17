@@ -8,7 +8,12 @@ from scipy.io import arff
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
 
+# Function to load data
 @st.cache
+def load_data():
+    data = arff.loadarff('jm1.arff')
+    df = pd.DataFrame(data[0])
+    return df
 
 # Function to calculate feature importance
 def feature_importance(data, target_col):
