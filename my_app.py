@@ -1,9 +1,13 @@
 import streamlit as st
 
 def load_data():
+    url = "http://promise.site.uottawa.ca/SERepository/datasets/jm1.arff"
     try:
-        data = arff.loadarff('jm1.arff')
+        response = requests.get(url)
+        data = arff.loads(response.text)
         df = pd.DataFrame(data[0])
+        # Handle missing values by filling with median
+        df.fillna(df.median(), inplace=True)
         return df
     except Exception as e:
         st.error(f"Error loading data: {str(e)}")
