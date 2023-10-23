@@ -1,13 +1,12 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly as px
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from scipy.io import arff
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
-import plotly
 
 # Function to load data
 def load_data():
