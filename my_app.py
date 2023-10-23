@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
 from scipy.io import arff
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
