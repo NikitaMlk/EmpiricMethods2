@@ -1,5 +1,14 @@
 import streamlit as st
 
+def load_data():
+    try:
+        data = arff.loadarff('jm1.arff')
+        df = pd.DataFrame(data[0])
+        return df
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
+        return None
+
 st.title("Data Visualization App")
 data = load_data()
 
