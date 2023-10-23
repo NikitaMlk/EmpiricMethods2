@@ -1,13 +1,5 @@
 import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from sklearn.ensemble import RandomForestClassifier
 import requests
-from scipy.io import arff
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import LabelEncoder
 
 def load_data():
     url = "http://promise.site.uottawa.ca/SERepository/datasets/jm1.arff"
