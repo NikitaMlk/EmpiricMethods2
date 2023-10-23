@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly as px
+import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
@@ -58,49 +58,61 @@ def feature_importance(data, target_col):
     st.plotly_chart(fig)
 
 # Function to plot numeric distribution
-def plot_numeric_distribution(data):
+def plot_numeric_distribution(data, selected_features, color_type, line_type):
+    if not selected_features:
+        st.warning("Please select numeric features for visualization.")
+        return
+
     numeric_features = data.select_dtypes(include=['float64', 'int64'])
 
-    n_cols = 3  # Adjust the number of columns
-    n_rows = int(math.ceil(numeric_features.shape[1] / n_cols))
+    # Create subplots
+    fig, axes = plt.subplots(1, len(selected_features), figsize=(15, 5))
 
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 10))
-    axes = axes.flatten()
+    # Set line style
+    line_styles = ['solid', 'dotted', 'dashed']
+    line_style = line_styles[0]  # Default to solid line
+    if line_type == 'dotted':
+        line_style = 'dotted'
+    elif line_type == 'dashed':
+        line_style = 'dashed'
 
-    for i, col in enumerate(numeric_features.columns):
+    # Set color
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+    color = colors[0]  # Default to blue
+    if color_type in colors:
+        color = color_type
+
+    # Plot histograms for each selected numeric feature
+    for i, col in enumerate(selected_features):
         ax = axes[i]
-        sns.histplot(data[col], kde=True, ax=ax)
+        sns.histplot(data[col], kde=True, ax=ax, color=color, linestyle=line_style)
         ax.set_title(f'Distribution of {col}')
         ax.set_xlabel(col)
         ax.set_ylabel('Frequency')
 
-    for i in range(numeric_features.shape[1], len(axes)):
-        fig.delaxes(axes[i])
-
     plt.tight_layout()
-
-    return fig
+    st.pyplot(fig)
 
 # Streamlit app
 def main():
-
-    # Function to load data
     st.title("Data Visualization App")
     data = load_data()
-    
+
     st.sidebar.header("Data Filters")
+    min_rows = st.sidebar.number_input("Minimum Number of Rows", min_value=0, value=0)
     selected_features = st.sidebar.multiselect("Select Features for Visualization", data.columns)
+
+    filtered_data = data.head(min_rows)  # Filter by the number of rows
 
     st.sidebar.header("Visualization Settings")
     color_type = st.sidebar.selectbox("Color Type", ['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     line_type = st.sidebar.selectbox("Line Type", ['solid', 'dotted', 'dashed'])
-    line_width = st.sidebar.number_input("Line Width", min_value=0.1, max_value=6.0, value=0.1)
 
     st.subheader("Feature Importance")
-    feature_importance(data, target_col='defects')
+    feature_importance(data, selected_features)
 
     st.subheader("Numeric Feature Distribution")
-    plot_numeric_distribution(data)
+    plot_numeric_distribution(data, selected_features, color_type, line_type)
 
 if __name__ == "__main__":
     main()
