@@ -1,6 +1,4 @@
 import streamlit as st
-import requests
-from scipy.io import arff
 
 def load_data():
     url = "http://promise.site.uottawa.ca/SERepository/datasets/jm1.arff"
