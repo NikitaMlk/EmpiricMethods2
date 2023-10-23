@@ -58,58 +58,28 @@ def feature_importance(data, target_col):
     st.plotly_chart(fig)
 
 # Function to plot numeric distribution
-def plot_numeric_distribution(data, selected_features, color_type, line_type, line_width):
-    if not selected_features:
-        st.warning("Please select numeric features for visualization.")
-        return
+def plot_numeric_distribution(data):
+    numeric_features = data.select_dtypes(include=['float64', 'int64'])
 
-    # Create a figure with subplots
-    fig = make_subplots(rows=1, cols=len(selected_features), subplot_titles=selected_features, shared_yaxes=True)
+    n_cols = 3  # Adjust the number of columns
+    n_rows = int(math.ceil(numeric_features.shape[1] / n_cols))
 
-    # Set line style
-    line_styles = ['solid', 'dotted', 'dashed']
-    line_style = line_styles[0]  # Default to solid line
-    if line_type in line_styles:
-        line_style = line_type
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 10))
+    axes = axes.flatten()
 
-    # Set line width
-    try:
-        line_width = float(line_width)
-    except ValueError:
-        line_width = 1.0
+    for i, col in enumerate(numeric_features.columns):
+        ax = axes[i]
+        sns.histplot(data[col], kde=True, ax=ax)
+        ax.set_title(f'Distribution of {col}')
+        ax.set_xlabel(col)
+        ax.set_ylabel('Frequency')
 
-    # Set color
-    colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black']
-    color = colors[0]  # Default to blue
-    if color_type in colors:
-        color = color_type
+    for i in range(numeric_features.shape[1], len(axes)):
+        fig.delaxes(axes[i])
 
-    # Plot histograms for each selected numeric feature
-    for i, col in enumerate(selected_features):
-        histogram = go.Histogram(x=data[col], marker_color=color)
-        histogram.update_xaxes(title_text=col)
-        histogram.update_yaxes(title_text='Frequency')
+    plt.tight_layout()
 
-        fig.add_trace(histogram, row=1, col=i+1)
-
-    # Update the layout
-    fig.update_layout(
-        title="Numeric Feature Distribution",
-        xaxis=dict(type='category'),  # Use category type for x-axis labels
-        xaxis_showgrid=False,
-        yaxis_showgrid=False,
-        barmode='overlay',
-        bargap=0.1,
-        bargroupgap=0.1,
-        showlegend=False
-    )
-
-    # Update line style and line width
-    for i in range(len(selected_features)):
-        fig.update_traces(marker=dict(line=dict(width=line_width, dash=line_style))
-
-    # Show the Plotly figure in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+    return fig
 
 # Streamlit app
 def main():
@@ -130,7 +100,7 @@ def main():
     feature_importance(data, target_col='defects')
 
     st.subheader("Numeric Feature Distribution")
-    plot_numeric_distribution(data, selected_features, color_type, line_type, line_width)
+    plot_numeric_distribution(data)
 
 if __name__ == "__main__":
     main()
