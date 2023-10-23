@@ -9,11 +9,18 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
 
 # Function to load data
-@st.cache
 def load_data():
-    data = arff.loadarff('jm1.arff')
-    df = pd.DataFrame(data[0])
-    return df
+    url = "http://promise.site.uottawa.ca/SERepository/datasets/jm1.arff"
+    try:
+        response = requests.get(url)
+        data = arff.loads(response.text)
+        df = pd.DataFrame(data[0])
+        # Handle missing values by filling with median
+        df.fillna(df.median(), inplace=True)
+        return df
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
+        return None
 
 # Function to calculate feature importance
 def feature_importance(data, target_col):
