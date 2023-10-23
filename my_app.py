@@ -109,7 +109,7 @@ def plot_numeric_distribution(data, selected_features, color_type, line_type, li
         fig.update_traces(marker=dict(line=dict(width=line_width, dash=line_style))
 
     # Show the Plotly figure in Streamlit
-    st.plotly_chart(fig)
+    st.write(fig)
 
 # Streamlit app
 def main():
