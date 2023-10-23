@@ -1,4 +1,5 @@
 import streamlit as st
+import requirements.txt
 
 def load_data():
     url = "http://promise.site.uottawa.ca/SERepository/datasets/jm1.arff"
